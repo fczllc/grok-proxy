@@ -1,0 +1,109 @@
+# Nginx配置示例
+
+# 全局配置
+user nginx;
+worker_processes auto;
+error_log /var/log/nginx/error.log warn;
+pid /var/run/nginx.pid;
+
+# 事件模块配置
+events {
+    worker_connections 1024;
+}
+
+# HTTP模块配置
+http {
+    # 基本设置
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+    
+    # 日志格式
+    log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                    '$status $body_bytes_sent "$http_referer" '
+                    '"$http_user_agent" "$http_x_forwarded_for"';
+    access_log /var/log/nginx/access.log main;
+    
+    # 优化设置
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+    
+    # 限制设置
+    client_max_body_size 10M;
+    
+    # GZIP压缩
+    gzip on;
+    gzip_disable "msie6";
+    gzip_vary on;
+    gzip_proxied any;
+    gzip_comp_level 6;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+    
+    # 速率限制区域定义
+    limit_req_zone $binary_remote_addr zone=api_limit:10m rate=10r/s;
+    
+    # 服务器配置
+    server {
+        listen 80;
+        server_name your-domain.com;
+        
+        # 重定向HTTP到HTTPS
+        location / {
+            return 301 https://$host$request_uri;
+        }
+    }
+    
+    server {
+        listen 443 ssl;
+        server_name your-domain.com;
+        
+        # SSL配置
+        ssl_certificate /path/to/cert.pem;
+        ssl_certificate_key /path/to/key.pem;
+        
+        # SSL优化
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_prefer_server_ciphers on;
+        ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+        ssl_session_cache shared:SSL:10m;
+        ssl_session_timeout 1d;
+        ssl_session_tickets off;
+        
+        # HSTS (可选，请谨慎使用)
+        # add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
+        
+        # 安全头
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-XSS-Protection "1; mode=block" always;
+        add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+        
+        # Grok API代理路径
+        location /v1/chat/completions {
+            # 速率限制
+            limit_req zone=api_limit burst=20 nodelay;
+            
+            # 代理设置
+            proxy_pass http://localhost:3000;
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            
+            # 流式响应需要的设置
+            proxy_set_header Connection '';
+            proxy_buffering off;
+            proxy_cache off;
+            proxy_read_timeout 300s;
+        }
+        
+        # 可选：添加其他路径，如静态文件服务等
+        
+        # 错误页面
+        error_page 404 /404.html;
+        error_page 500 502 503 504 /50x.html;
+    }
+} 

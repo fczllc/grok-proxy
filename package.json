@@ -1,0 +1,31 @@
+{
+  "name": "grok-proxy",
+  "version": "1.0.0",
+  "description": "Grok API中转服务 - 提供OpenAI兼容格式的API代理",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "grok",
+    "api",
+    "proxy",
+    "openai",
+    "chat",
+    "completion"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "morgan": "^1.10.0",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}

@@ -1,0 +1,24 @@
+# 依赖项
+node_modules/
+
+# 日志
+logs/
+*.log
+npm-debug.log*
+
+# 环境变量文件
+.env
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# IDE和编辑器文件
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# 临时文件和缓存
+.tmp/
+.cache/ 
