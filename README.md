@@ -17,7 +17,38 @@
 - 能够访问Grok API的网络环境
 - (可选) Nginx作为反向代理
 
-## 安装步骤
+## 一键部署（推荐）
+
+对于Ubuntu/Debian系统，我们提供了一键部署脚本，可以自动完成所有安装和配置步骤：
+
+```bash
+# 使用curl
+curl -sSL https://jcza.fczllc.top:8418/fczllc/grok-proxy/src/branch/main/deploy_grok_proxy.sh | sudo bash
+
+# 或使用wget
+wget -O - -q https://jcza.fczllc.top:8418/fczllc/grok-proxy/src/branch/main/deploy_grok_proxy.sh | sudo bash
+```
+
+脚本将引导您完成以下步骤：
+1. 安装必要的依赖（Node.js、PM2、Nginx等）
+2. 克隆项目代码
+3. 配置.env文件（提示您输入端口、代理密钥等）
+4. 配置Nginx和SSL（可选，如果您提供域名）
+5. 启动服务并设置为开机自启
+
+安装完成后，您可以使用以下命令随时访问服务管理菜单：
+
+```bash
+sudo grok-proxy-manager menu
+```
+
+通过管理菜单，您可以启动/停止服务、修改配置、测试验证和卸载服务。
+
+要了解更多关于部署脚本的详情，请参阅[DEPLOYMENT.md](./DEPLOYMENT.md)。
+
+## 手动安装步骤
+
+如果您需要更精细地控制安装过程，也可以按以下步骤手动安装：
 
 1. 克隆项目到本地:
 
